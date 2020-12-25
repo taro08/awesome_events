@@ -5,15 +5,14 @@
 # This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
 # For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
 
-name: Ruby
-
+name: Rails Tests
 on: [push, pull_request]
-
 jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Ruby
+    - name: Set up Ruby 2.6
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6
@@ -21,13 +20,10 @@ jobs:
       env:
         RAILS_ENV: test
       run: |
-        sudo apt-get yqq install libsqlite3-dev
-        bundle install --jobs 4 retry 3
+        sudo apt-get -yqq install libsqlite3-dev
+        bundle install --jobs 4 --retry 3
+        bin/rails db:create
         bin/rails db:migrate
         bin/yarn install
         bin/rails test
-        bin/rails test:system 
-
-
-
-
+        bin/rails test:system
